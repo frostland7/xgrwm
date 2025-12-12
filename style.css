@@ -1,39 +1,169 @@
+/* Общие стили */
 body {
-  background: #111;
-  color: white;
-  font-family: sans-serif;
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  color: #111;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Левое меню */
+#sidebar {
+  width: 280px;
+  background-color: #ffffff;
+  border-right: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+#sidebar h2 {
+  margin: 0 0 20px 0;
+  font-size: 24px;
+  color: #007bff;
+}
+
+#user-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#user-info img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.menu-section h3 {
+  margin: 10px 0 5px 0;
+  font-size: 14px;
+  color: #555;
+  text-transform: uppercase;
+}
+
+.menu-section ul {
+  list-style: none;
+  padding: 0;
   margin: 0;
 }
 
-.screen {
-  padding: 20px;
+.menu-section ul li {
+  padding: 8px 5px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background 0.2s;
 }
 
-.hidden {
-  display: none;
+.menu-section ul li:hover {
+  background-color: #f0f0f0;
+}
+
+/* Главное окно */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-bar {
+  height: 50px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+  box-sizing: border-box;
 }
 
 #chat-box {
-  height: 70vh;
+  flex: 1;
+  padding: 15px;
+  background-color: #e5ddd5;
   overflow-y: auto;
-  background: #222;
-  padding: 10px;
-  border-radius: 10px;
-  margin-bottom: 10px;
 }
 
 .chat-input {
   display: flex;
-  gap: 10px;
+  padding: 10px;
+  background-color: #ffffff;
+  border-top: 1px solid #ccc;
 }
 
 .chat-input input {
   flex: 1;
   padding: 10px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  margin-right: 10px;
+  outline: none;
 }
 
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
+.chat-input button {
+  padding: 10px 15px;
+  border-radius: 20px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
 }
+
+/* Экран авторизации */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.login-box {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+.login-box button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+/* Кнопка админки */
+#adminBtn {
+  background-color: gold;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: none;
+}
+
+#adminBtn.visible {
+  display: inline-block;
+  }
