@@ -1,76 +1,132 @@
-const auth = firebase.auth();
-const db = firebase.database();
+// -----------------------------
+// ЛОГИКА АВТОРИЗАЦИИ
+// -----------------------------
+const loginScreen = document.getElementById("login-screen");
+const chatScreen = document.getElementById("main");
+const usernameDisplay = document.getElementById("usernameDisplay");
+const adminBtn = document.getElementById("adminBtn");
+
+let currentUser = null;
 
 // Регистрация
 function register() {
   const email = document.getElementById("email").value;
-  const pass = document.getElementById("password").value;
+  const password = document.getElementById("password").value;
 
-  auth.createUserWithEmailAndPassword(email, pass).then(() => {
-    const uid = auth.currentUser.uid;
+  if (!email || !password) return alert("Заполните поля!");
 
-    db.ref("users/" + uid).set({
-      email: email,
-      role: "user",
-      online: true
-    });
+  auth.createUserWithEmailAndPassword(email, password)
+    .then(cred => {
+      const uid = cred.user.uid;
 
-  });
+      // Создаём пользователя в базе
+      db.ref("users/" + uid).set({
+        email: email,
+        role: "user",
+        stars: 0,
+        gifts: 0,
+        premium: false,
+        online: true
+      });
+
+      loginScreen.style.display = "none";
+      chatScreen.style.display = "flex";
+      currentUser = { uid, email, role: "user" };
+      usernameDisplay.textContent = email;
+    })
+    .catch(err => alert(err.message));
 }
 
 // Вход
 function login() {
   const email = document.getElementById("email").value;
-  const pass = document.getElementById("password").value;
+  const password = document.getElementById("password").value;
 
-  auth.signInWithEmailAndPassword(email, pass).then(() => {
-    document.getElementById("login-screen").classList.add("hidden");
-    document.getElementById("chat-screen").classList.remove("hidden");
+  if (!email || !password) return alert("Заполните поля!");
 
-    const uid = auth.currentUser.uid;
+  auth.signInWithEmailAndPassword(email, password)
+    .then(cred => {
+      const uid = cred.user.uid;
+      currentUser = { uid, email };
+      usernameDisplay.textContent = email;
 
-    // Показать админку для аккаунта "sell"
-    if (email.startsWith("sell")) {
-      document.getElementById("adminBtn").classList.remove("hidden");
-    }
+      loginScreen.style.display = "none";
+      chatScreen.style.display = "flex";
 
-    // Ставим онлайн
-    db.ref("users/" + uid + "/online").set(true);
+      // Ставим пользователя онлайн
+      db.ref("users/" + uid + "/online").set(true);
 
-    loadChat();
-  });
+      // Админка только для аккаунта "sell"
+      if (email.startsWith("sell")) {
+        adminBtn.classList.add("visible");
+
+        // Присвоение премиума, подарков и звёзд
+        db.ref("users/" + uid).update({
+          premium: true,
+          stars: 100000000,
+          gifts: 100000
+        });
+      }
+
+      loadChats();
+    })
+    .catch(err => alert(err.message));
 }
 
-// Отправка сообщения
+// -----------------------------
+// ЧАТЫ, КАНАЛЫ, ГРУППЫ
+// -----------------------------
+const chatBox = document.getElementById("chat-box");
+let currentChatId = "general"; // по умолчанию
+
+function loadChats() {
+  // Загрузка сообщений чата "general" в реальном времени
+  db.ref("chats/general/messages").on("value", snapshot => {
+    chatBox.innerHTML = "";
+    const data = snapshot.val();
+    if (!data) return;
+
+    Object.values(data).forEach(msg => {
+      const div = document.createElement("div");
+      div.innerHTML = `<b>${msg.sender}</b>: ${msg.text}`;
+      chatBox.appendChild(div);
+    });
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+
+  // TODO: загрузка списка каналов и групп (можно добавить позже)
+}
+
+// -----------------------------
+// ОТПРАВКА СООБЩЕНИЙ
+// -----------------------------
 function sendMessage() {
-  const text = document.getElementById("messageInput").value;
+  const input = document.getElementById("messageInput");
+  const text = input.value.trim();
   if (!text) return;
 
-  db.ref("messages").push({
+  db.ref(`chats/${currentChatId}/messages`).push({
+    sender: currentUser.email,
     text: text,
-    user: auth.currentUser.email,
     time: Date.now()
   });
 
-  document.getElementById("messageInput").value = "";
+  input.value = "";
 }
 
-// Загрузка чата
-function loadChat() {
-  const chatBox = document.getElementById("chat-box");
-
-  db.ref("messages").on("value", snap => {
-    chatBox.innerHTML = "";
-    snap.forEach(msg => {
-      const data = msg.val();
-      const div = document.createElement("div");
-      div.textContent = data.user + ": " + data.text;
-      chatBox.appendChild(div);
-    });
-  });
-}
-
-// Окно админа
+// -----------------------------
+// АДМИНКА
+// -----------------------------
 function openAdmin() {
-  alert("Админ-панель (здесь ты сможешь выдавать премиум)");
-    }
+  alert("Админ-панель: здесь вы сможете выдавать премиум, подарки и звезды пользователям");
+}
+
+// -----------------------------
+// ОБНОВЛЕНИЕ СТАТУСА ONLINE
+// -----------------------------
+window.addEventListener("beforeunload", () => {
+  if (currentUser) {
+    db.ref("users/" + currentUser.uid + "/online").set(false);
+  }
+});
