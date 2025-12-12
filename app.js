@@ -1,15 +1,17 @@
-// -----------------------------
-// ЛОГИКА АВТОРИЗАЦИИ
-// -----------------------------
+// Получаем элементы
 const loginScreen = document.getElementById("login-screen");
 const chatScreen = document.getElementById("main");
 const usernameDisplay = document.getElementById("usernameDisplay");
 const adminBtn = document.getElementById("adminBtn");
+const registerBtn = document.getElementById("registerBtn");
+const loginBtn = document.getElementById("loginBtn");
 
 let currentUser = null;
 
-// Регистрация
-function register() {
+// -----------------------------
+// РЕГИСТРАЦИЯ
+// -----------------------------
+registerBtn.addEventListener("click", () => {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
@@ -19,7 +21,6 @@ function register() {
     .then(cred => {
       const uid = cred.user.uid;
 
-      // Создаём пользователя в базе
       db.ref("users/" + uid).set({
         email: email,
         role: "user",
@@ -29,16 +30,21 @@ function register() {
         online: true
       });
 
-      loginScreen.style.display = "none";
-      chatScreen.style.display = "flex";
       currentUser = { uid, email, role: "user" };
       usernameDisplay.textContent = email;
+
+      loginScreen.style.display = "none";
+      chatScreen.style.display = "flex";
+
+      loadChats();
     })
     .catch(err => alert(err.message));
-}
+});
 
-// Вход
-function login() {
+// -----------------------------
+// ВХОД
+// -----------------------------
+loginBtn.addEventListener("click", () => {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
@@ -53,14 +59,12 @@ function login() {
       loginScreen.style.display = "none";
       chatScreen.style.display = "flex";
 
-      // Ставим пользователя онлайн
+      // Ставим онлайн
       db.ref("users/" + uid + "/online").set(true);
 
       // Админка только для аккаунта "sell"
       if (email.startsWith("sell")) {
         adminBtn.classList.add("visible");
-
-        // Присвоение премиума, подарков и звёзд
         db.ref("users/" + uid).update({
           premium: true,
           stars: 100000000,
@@ -71,16 +75,15 @@ function login() {
       loadChats();
     })
     .catch(err => alert(err.message));
-}
+});
 
 // -----------------------------
-// ЧАТЫ, КАНАЛЫ, ГРУППЫ
+// ЗАГРУЗКА ЧАТОВ
 // -----------------------------
 const chatBox = document.getElementById("chat-box");
 let currentChatId = "general"; // по умолчанию
 
 function loadChats() {
-  // Загрузка сообщений чата "general" в реальном времени
   db.ref("chats/general/messages").on("value", snapshot => {
     chatBox.innerHTML = "";
     const data = snapshot.val();
@@ -94,8 +97,6 @@ function loadChats() {
 
     chatBox.scrollTop = chatBox.scrollHeight;
   });
-
-  // TODO: загрузка списка каналов и групп (можно добавить позже)
 }
 
 // -----------------------------
@@ -119,11 +120,11 @@ function sendMessage() {
 // АДМИНКА
 // -----------------------------
 function openAdmin() {
-  alert("Админ-панель: здесь вы сможете выдавать премиум, подарки и звезды пользователям");
+  alert("Админ-панель: выдача премиум, подарков и звезд");
 }
 
 // -----------------------------
-// ОБНОВЛЕНИЕ СТАТУСА ONLINE
+// ОТКЛЮЧЕНИЕ ONLINE
 // -----------------------------
 window.addEventListener("beforeunload", () => {
   if (currentUser) {
