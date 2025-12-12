@@ -1,0 +1,39 @@
+body {
+  background: #111;
+  color: white;
+  font-family: sans-serif;
+  margin: 0;
+}
+
+.screen {
+  padding: 20px;
+}
+
+.hidden {
+  display: none;
+}
+
+#chat-box {
+  height: 70vh;
+  overflow-y: auto;
+  background: #222;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.chat-input {
+  display: flex;
+  gap: 10px;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
