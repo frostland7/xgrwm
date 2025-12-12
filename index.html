@@ -1,24 +1,38 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>XGram</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div id="login-screen" class="screen">
+<!-- Левое меню -->
+<div id="sidebar">
   <h2>XGram</h2>
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Пароль">
-  <button onclick="register()">Регистрация</button>
-  <button onclick="login()">Вход</button>
+  <div id="user-info">
+    <img id="avatar" src="https://i.imgur.com/8Km9tLL.png" alt="Avatar">
+    <span id="usernameDisplay"></span>
+  </div>
+  <div class="menu-section">
+    <h3>Чаты</h3>
+    <ul id="chat-list"></ul>
+  </div>
+  <div class="menu-section">
+    <h3>Каналы</h3>
+    <ul id="channel-list"></ul>
+  </div>
+  <div class="menu-section">
+    <h3>Группы</h3>
+    <ul id="group-list"></ul>
+  </div>
 </div>
 
-<div id="chat-screen" class="screen hidden">
+<!-- Главное окно -->
+<div id="main">
   <div class="top-bar">
-    <div id="usernameDisplay"></div>
-    <button id="adminBtn" class="hidden" onclick="openAdmin()">Админ</button>
+    <div id="current-chat-name">Выберите чат</div>
+    <button id="adminBtn" class="hidden" onclick="openAdmin()">⚡ Admin</button>
   </div>
 
   <div id="chat-box"></div>
@@ -29,12 +43,25 @@
   </div>
 </div>
 
+<!-- Экран авторизации -->
+<div id="login-screen" class="overlay">
+  <div class="login-box">
+    <h2>XGram Login</h2>
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Пароль">
+    <button onclick="register()">Регистрация</button>
+    <button onclick="login()">Вход</button>
+  </div>
+</div>
+
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js"></script>
 
+<!-- Скрипты -->
 <script src="firebase-config.js"></script>
 <script src="app.js"></script>
 
 </body>
-</html>
+  </html>
